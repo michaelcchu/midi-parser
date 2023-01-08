@@ -1,7 +1,9 @@
 input.addEventListener("change", () => {
     for (const file of input.files) {
-        const obj = document.createElement("object");
-        obj.data = URL.createObjectURL(file); obj.type = file.type;
-        objects.appendChild(obj);
+        const reader = new FileReader();
+        reader.addEventListener("load", (e) => {
+            console.log(e.target.result);
+        });
+        reader.readAsArrayBuffer(file);
     }
 });
