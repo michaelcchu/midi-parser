@@ -19,6 +19,7 @@ function readVarLen(values) {
 }
 
 input.addEventListener("change", () => {
+    output.innerHTML = "";
     for (const file of input.files) {
         const reader = new FileReader();
         reader.addEventListener("load", (e) => {
@@ -122,7 +123,7 @@ input.addEventListener("change", () => {
             }
             const midi = {header:header, trackChunks:trackChunks};
             console.log(view); console.log(midi);
-            output.value = JSON.stringify(midi);
+            output.innerHTML += JSON.stringify(midi, null, "\t") + "\n";
         });
         reader.readAsArrayBuffer(file);
     }
