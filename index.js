@@ -82,8 +82,9 @@ input.addEventListener("change", () => {
                             e.text = read(str, "", values, e.length);
                         } else if (e.metaType === 32) {
                             e.channel = read(int, 0, values, 1);
+                        } else if (e.metaType === 33) {
+                            e.port = read(int, 0, values, 1);
                         } else if (e.metaType === 47) {
-                            console.log("meta event: end of track");
                             endOfTrack = true;
                         } else if (e.metaType === 81) {
                             e.microsecondsPerQuarter = read(int, 0, values, 3);
