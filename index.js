@@ -121,8 +121,8 @@ input.addEventListener("change", () => {
                 trackChunks.push(trackChunk);
             }
             const midi = {header:header, trackChunks:trackChunks};
-            console.log(view);
-            console.log(midi);
+            console.log(view); console.log(midi);
+            output.value = JSON.stringify(midi);
         });
         reader.readAsArrayBuffer(file);
     }
