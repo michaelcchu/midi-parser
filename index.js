@@ -9,12 +9,12 @@ function read(f, startValue, values, times) {
     return result;
 }
 
-function readVarLen(f, startValue, values) {
+function readVarLen(values) {
     const num = []; let byte; 
     do {byte = values.next().value;
         if (byte >= 128) {num.push(byte - 128);} else {num.push(byte);}
     } while (byte >= 128);
-    return read(f, startValue, num.values(), num.length);
+    return read(int, 0, num.values(), num.length);
 }
 
 input.addEventListener("change", () => {
@@ -41,7 +41,7 @@ input.addEventListener("change", () => {
                 let endOfTrack = false;
                 while (!endOfTrack) {
                     const e = {
-                        deltaTime: readVarLen(int, 0, values),
+                        deltaTime: readVarLen(values),
                         eventType: read(int, 0, values, 1),
                     }
                     if ((e.eventType >= 80) && (e.eventType < 240)) {
@@ -49,12 +49,12 @@ input.addEventListener("change", () => {
                         e.parameter2 = read(int, 0, values, 1);
                     } else if (e.eventType === 255) {
                         e.metaType = read(int, 0, values, 1);
-                        e.length = readVarLen(int, 0, values);
+                        e.length = readVarLen(values);
                         if (e.metaType === 0) {
                             e.msb = read(int, 0, values, 1);
                             e.lsb = read(int, 0, values, 1);
                         } else if (e.metaType >= 1 && e.metaType <= 7) {
-                            e.text = readVarLen(str, "", values);
+                            e.text = read(str, "", values, e.length);
                         } else if (e.metaType === 32) {
                             e.channel = read(int, 0, values, 1);
                         } else if (e.metaType === 47) {
@@ -77,12 +77,12 @@ input.addEventListener("change", () => {
                             e.key = read(int, 0, values, 1);
                             e.scale = read(int, 0, values, 1);
                         } else if (e.metaType === 127) {
-                            e.data = readVarLen(str, "", values);
+                            e.data = read(str, "", values, e.length);
                         } else {
                             console.log("unknown metaType: " + e.metaType);
                         }
                     } else if (e.eventType === 240) {
-                        e.length = readVarLen(int, 0, values);
+                        e.length = readVarLen(values);
                         let data;
                         do {data = read(int, 0, values, 1);} 
                         while (data !== 247);
