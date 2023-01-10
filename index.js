@@ -44,15 +44,30 @@ input.addEventListener("change", () => {
                         deltaTime: readVarLen(values),
                         eventType: read(int, 0, values, 1),
                     }
-                    if ((e.eventType >= 128) && (e.eventType < 240)) {
-                        e.parameter1 = read(int, 0, values, 1);
-                        e.parameter2 = read(int, 0, values, 1);
+                    if (e.eventType < 128) {
+                        console.log("unknown eventType: " + e.eventType);
+                    } else if (e.eventType < 160) {
+                        e.noteNumber = read(int, 0, values, 1);
+                        e.velocity = read(int, 0, values, 1);
+                    } else if (e.eventType < 176) {
+                        e.noteNumber = read(int, 0, values, 1);
+                        e.afterTouch = read(int, 0, values, 1);
+                    } else if (e.eventType < 192) {
+                        e.controllerNumber = read(int, 0, values, 1);
+                        e.controllerValue = read(int, 0, values, 1);
+                    } else if (e.eventType < 208) {
+                        e.programNumber = read(int, 0, values, 1);
+                    } else if (e.eventType < 224) {
+                        e.afterTouch = read(int, 0, values, 1);
+                    } else if (e.eventType < 240) {
+                        e.pitchLSB = read(int, 0, values, 1);
+                        e.pitchMSB = read(int, 0, values, 1);
                     } else if (e.eventType === 255) {
                         e.metaType = read(int, 0, values, 1);
                         e.length = readVarLen(values);
                         if (e.metaType === 0) {
-                            e.msb = read(int, 0, values, 1);
-                            e.lsb = read(int, 0, values, 1);
+                            e.numberMSB = read(int, 0, values, 1);
+                            e.numberLSB = read(int, 0, values, 1);
                         } else if (e.metaType >= 1 && e.metaType <= 7) {
                             e.text = read(str, "", values, e.length);
                         } else if (e.metaType === 32) {
