@@ -38,7 +38,8 @@ input.addEventListener("change", () => {
                     chunkSize: read(int, 0, values, 4),
                     trackEventData: []
                 }
-                while (true) {
+                let endOfTrack = false;
+                while (!endOfTrack) {
                     const e = {
                         deltaTime: readVarLen(int, 0, values),
                         eventType: read(int, 0, values, 1),
@@ -58,6 +59,7 @@ input.addEventListener("change", () => {
                             e.channel = read(int, 0, values, 1);
                         } else if (e.metaType === 47) {
                             console.log("meta event: end of track");
+                            endOfTrack = true;
                         } else if (e.metaType === 81) {
                             e.microsecondsPerQuarter = read(int, 0, values, 3);
                         } else if (e.metaType === 84) {
@@ -79,12 +81,15 @@ input.addEventListener("change", () => {
                         } else {
                             console.log("unknown metaType: " + e.metaType);
                         }
+                    } else if (e.eventType === 240) {
+                        e.length = readVarLen(int, 0, values);
+                        let data;
+                        do {data = read(int, 0, values, 1);} 
+                        while (data !== 247);
                     } else {
                         console.log("unknown eventType: " + e.eventType);
-                        // write response here
                     }
                     trackChunk.trackEventData.push(e);
-                    break;
                 }
                 trackChunks.push(trackChunk);
             }
