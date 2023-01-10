@@ -40,31 +40,36 @@ input.addEventListener("change", () => {
                     trackEventData: []
                 }
                 let endOfTrack = false;
+                let previousEventType;
                 while (!endOfTrack) {
-                    const e = {
-                        deltaTime: readVarLen(values),
-                        eventType: read(int, 0, values, 1),
+                    const e = {deltaTime: readVarLen(values)}
+                    let firstValue = read(int, 0, values, 1);
+                    if (firstValue < 128) {
+                        e.eventType = previousEventType;
+                    } else {
+                        e.eventType = firstValue; 
+                        if (firstValue !== 240) {
+                            firstValue = read(int, 0, values, 1);
+                        }
                     }
-                    if (e.eventType < 128) {
-                        console.log("unknown eventType: " + e.eventType);
-                    } else if (e.eventType < 160) {
-                        e.noteNumber = read(int, 0, values, 1);
+                    if (e.eventType < 160) {
+                        e.noteNumber = firstValue;
                         e.velocity = read(int, 0, values, 1);
                     } else if (e.eventType < 176) {
-                        e.noteNumber = read(int, 0, values, 1);
+                        e.noteNumber = firstValue;
                         e.afterTouch = read(int, 0, values, 1);
                     } else if (e.eventType < 192) {
-                        e.controllerNumber = read(int, 0, values, 1);
+                        e.controllerNumber = firstValue;
                         e.controllerValue = read(int, 0, values, 1);
                     } else if (e.eventType < 208) {
-                        e.programNumber = read(int, 0, values, 1);
+                        e.programNumber = firstValue;
                     } else if (e.eventType < 224) {
-                        e.afterTouch = read(int, 0, values, 1);
+                        e.afterTouch = firstValue;
                     } else if (e.eventType < 240) {
-                        e.pitchLSB = read(int, 0, values, 1);
+                        e.pitchLSB = firstValue;
                         e.pitchMSB = read(int, 0, values, 1);
                     } else if (e.eventType === 255) {
-                        e.metaType = read(int, 0, values, 1);
+                        e.metaType = firstValue;
                         e.length = readVarLen(values);
                         if (e.metaType === 0) {
                             e.numberMSB = read(int, 0, values, 1);
@@ -98,15 +103,15 @@ input.addEventListener("change", () => {
                             console.log("unknown metaType: " + e.metaType);
                             console.log(read(lit, "", values, e.length));
                         }
-                    } else if (e.eventType === 240) {
+                    } else if (e.eventType === 240 || e.eventType === 247) {
                         e.length = readVarLen(values);
-                        let data;
-                        do {data = read(int, 0, values, 1);} 
-                        while (data !== 247);
+                        const data = read(str, "", values, e.length);
+                        console.log("eventType: " + e.eventType);
                     } else {
                         console.log("unknown eventType: " + e.eventType);
                     }
                     trackChunk.trackEventData.push(e);
+                    previousEventType = e.eventType;
                 }
                 trackChunks.push(trackChunk);
             }
