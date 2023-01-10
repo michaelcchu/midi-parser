@@ -44,7 +44,7 @@ input.addEventListener("change", () => {
                         deltaTime: readVarLen(values),
                         eventType: read(int, 0, values, 1),
                     }
-                    if ((e.eventType >= 80) && (e.eventType < 240)) {
+                    if ((e.eventType >= 128) && (e.eventType < 240)) {
                         e.parameter1 = read(int, 0, values, 1);
                         e.parameter2 = read(int, 0, values, 1);
                     } else if (e.eventType === 255) {
