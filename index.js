@@ -1,5 +1,6 @@
 function str(value, i, times) {return String.fromCharCode(value);}
 function int(value, i, times) {return value * (2**8)**(times-1-i);}
+function lit(value, i, times) {return value + ",";}
 
 function read(f, startValue, values, times) {
     let result = startValue;
@@ -95,6 +96,7 @@ input.addEventListener("change", () => {
                             e.data = read(str, "", values, e.length);
                         } else {
                             console.log("unknown metaType: " + e.metaType);
+                            console.log(read(lit, "", values, e.length));
                         }
                     } else if (e.eventType === 240) {
                         e.length = readVarLen(values);
