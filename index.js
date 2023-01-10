@@ -45,7 +45,11 @@ input.addEventListener("change", () => {
                     const e = {deltaTime: readVarLen(values)}
                     let firstValue = read(int, 0, values, 1);
                     if (firstValue < 128) {
-                        e.eventType = previousEventType;
+                        if (previousEventType !== null) {
+                            e.eventType = previousEventType;
+                        } else {
+                            console.log("error: previousEventType is null");
+                        }
                     } else {
                         e.eventType = firstValue; 
                         if (firstValue !== 240) {
