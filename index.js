@@ -45,6 +45,10 @@ input.addEventListener("change", () => {
                 while (!endOfTrack) {
                     const e = {deltaTime: readVarLen(values)}
                     let firstValue = read(int, 0, values, 1);
+                    if (isNaN(firstValue)) {
+                        console.log("error: firstValue is NaN");
+                        endOfTrack = true;
+                    }
                     if (firstValue < 128) {
                         if (previousEventType !== null) {
                             e.eventType = previousEventType;
